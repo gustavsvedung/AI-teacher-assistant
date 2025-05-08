@@ -180,9 +180,7 @@
             // Step 2: Analyze with Claude API
             const analyzeWithClaude = async (text) => {
     try {
-        // Replace with your actual deployed proxy URL
-        const proxyUrl = 'https://music-teacher-proxy.onrender.com'; 
-        // For Netlify: 'https://your-netlify-app.netlify.app/.netlify/functions/claude-proxy'
+        const proxyUrl = 'https://music-teacher-proxy.onrender.com/proxy/claude';
         
         const response = await fetch(proxyUrl, {
             method: 'POST',
@@ -208,12 +206,38 @@ ${LESSON_TEMPLATE.replace('[datum]', formatDate())}`
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Claude API error: ${response.status} - ${errorText}`);
+            console.error('Proxy server error response:', errorText);
+            
+            // Handle different error types with more specific messages
+            if (response.status === 404) {
+                throw new Error(`Proxy endpoint not found. Check the proxy URL (${response.status})`);
+            } else if (response.status === 400) {
+                throw new Error(`Bad request to proxy: ${errorText} (${response.status})`);
+            } else if (response.status === 401 || response.status === 403) {
+                throw new Error(`Authentication error: Kontrollera din Claude API-nyckel (${response.status})`);
+            } else if (response.status >= 500) {
+                throw new Error(`Proxy server error: ${errorText} (${response.status})`);
+            } else {
+                throw new Error(`Claude API error: ${response.status} - ${errorText}`);
+            }
         }
 
         const data = await response.json();
+        
+        // Validate the response structure
+        if (!data.content || !data.content[0] || !data.content[0].text) {
+            console.error('Unexpected response structure:', data);
+            throw new Error('Oväntad svarsstruktur från Claude API');
+        }
+        
         return data.content[0].text;
     } catch (error) {
+        // Handle network errors separately
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            console.error('Network error:', error);
+            throw new Error('Kunde inte ansluta till proxy-servern. Kontrollera din internetanslutning.');
+        }
+        
         console.error('Claude API error:', error);
         throw new Error('Kunde inte analysera med Claude: ' + error.message);
     }
