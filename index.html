@@ -19,23 +19,16 @@
     <div id="root" class="min-h-screen p-8"></div>
 
     <script type="text/babel">
-        const LESSON_TEMPLATE = `**LEKTION [datum]**
-**Elev: **[namn]
+        const LESSON_TEMPLATE = `**## Lektion [datum]**
 
-**Dagens fokus**
-(huvudsakligt innehåll/moment)
+**### Minnesanteckningar**
+[Den transkriberade röstanteckningen i sin helhet, justerad till tydligt skriftspråk. Så ta bort alla talspråksformuleringar och formatera texten som om det vore en personlig minnesanteckning gjord av en lärare. Om det finns uppgifter om att läraren lovat att fixa något efter lektionen, som att t ex dela noter med eleven, markera detta med fet stil.]
 
-**Arbetsmaterial**
-(låtar/övningar)
+**#### Dagens arbetsmaterial**
+[Titel på ev. sång som arbetats på under lektionen, med anteckning om tonart eller transponering om det finns.]
 
-**Progression**
-(⭐️ = utmärkt, ✅ = enligt plan, ⚠️ = behöver extra stöd)
-
-**Nästa steg**
-(given läxa till nästa gång och vad behöver följas upp)
-
-**Särskilda noteringar**
-(viktiga observationer för framtida planering/bedömning)`;
+**#### Läxa till nästa lektion**
+[Uppgift om ev. ny läxa eller särskild arbetsuppgift som givits eleven att arbeta med till nästa lektion.]`;
 
         const AudioRecorder = () => {
             const [isRecording, setIsRecording] = React.useState(false);
